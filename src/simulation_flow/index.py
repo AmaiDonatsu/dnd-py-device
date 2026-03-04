@@ -8,10 +8,20 @@ from gpiozero import LED, Button, Device
 
 def audio_processing():
     garbage_list = []
+    print("--- Hilo de procesamiento de audio iniciado ---")
     while True:
-        if len(garbage_list) > 1000:
-            garbage_list.append([0.0] * 1000)
-        time.sleep(0.01)
+        # Simular carga de CPU con cálculos matemáticos
+        _ = [x**2 for x in range(5000)]
+        
+        # Simular consumo de memoria añadiendo datos a una lista
+        # Cada iteración añade unos 8KB aproximadamente
+        garbage_list.append([0.1] * 1000)
+        
+        # Cada 50 iteraciones imprimimos el estado de la memoria simulada
+        if len(garbage_list) % 50 == 0:
+            print(f"Carga: {len(garbage_list)} bloques en memoria...")
+            
+        time.sleep(0.1)
 
 def setup():
     led = LED(17)
