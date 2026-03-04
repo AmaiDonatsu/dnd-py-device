@@ -1,6 +1,7 @@
 import os
 import time
 import threading
+import numpy as np
 
 os.environ['GPIOZERO_PIN_FACTORY'] = 'mock'
 
@@ -8,20 +9,26 @@ from gpiozero import LED, Button, Device
 
 def audio_processing():
     garbage_list = []
+
+    FS = 44100  # Frecuencia de muestreo
+    CHUNK_SIZE = 1024  # Tamaño del bloque de audio
+    F_NOTE = 440.0  # Frecuencia de la nota (A4)
+
+    print(f"[Audio] Simulando procesamiento de audio a {FS} Hz, bloque de {CHUNK_SIZE} muestras, nota {F_NOTE} Hz")
+
     print("--- Hilo de procesamiento de audio iniciado ---")
+
+    n=0
     while True:
-        # Simular carga de CPU con cálculos matemáticos
-        _ = [x**2 for x in range(5000)]
+        t = np.arange(n, n + CHUNK_SIZE) / FS
+        digital_signal = np.sin(2 * np.pi * F_NOTE * t).astype(np.float32)
+        processed = digital_signal * 0.5  # Simulación de procesamiento (reducción de volumen)
+
+        _ = processed.tobytes()
+
+        n+= CHUNK_SIZE
+        time.sleep(CHUNK_SIZE / FS)
         
-        # Simular consumo de memoria añadiendo datos a una lista
-        # Cada iteración añade unos 8KB aproximadamente
-        garbage_list.append([0.1] * 1000)
-        
-        # Cada 50 iteraciones imprimimos el estado de la memoria simulada
-        if len(garbage_list) % 50 == 0:
-            print(f"Carga: {len(garbage_list)} bloques en memoria...")
-            
-        time.sleep(0.1)
 
 def setup():
     led = LED(17)
