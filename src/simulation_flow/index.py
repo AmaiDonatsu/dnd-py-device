@@ -27,9 +27,13 @@ def flow():
     audio_thread = threading.Thread(target=audio_processing, daemon=True)
     audio_thread.start()
 
+    print("--- Simulación activa (Presiona Ctrl+C para salir) ---")
     try:
-        time.sleep(1)
+        while True:
+            # Aquí podrías simular eventos o simplemente esperar
+            time.sleep(2)
+            print("Heartbeat: Simulación corriendo...")
     except KeyboardInterrupt:
-        print("Exiting simulation...")
+        print("\nExiting simulation...")
 
 
