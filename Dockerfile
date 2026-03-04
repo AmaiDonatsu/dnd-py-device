@@ -13,6 +13,7 @@ RUN chmod +x /install.sh && /install.sh && rm /install.sh
 
 # Añadimos el directorio de binarios de uv al PATH
 ENV PATH="/root/.local/bin/:$PATH"
+ENV PYTHONUNBUFFERED=1
 
 # Directorio de trabajo dentro del contenedor
 WORKDIR /app
