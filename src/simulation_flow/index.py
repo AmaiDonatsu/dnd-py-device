@@ -17,22 +17,22 @@ def audio_processing():
 
     n = 0
     while True:
-        # Calcular el tiempo de inicio para este bloque
-        t = np.arange(n, n + CHUNK_SIZE) / FS
+        # 1. Simulamos ruido + una nota de guitarra (440Hz)
+        t = np.linspace(0, CHUNK_SIZE/FS, CHUNK_SIZE)
+        signal = np.sin(2 * np.pi * 440 * t) + np.random.normal(0, 0.1, CHUNK_SIZE)
         
-        # Generar una señal digital senoidal (Nota La 440Hz)
-        digital_signal = np.sin(2 * np.pi * F_NOTE * t).astype(np.float32)
+        # 2. EJECUTAMOS LA FFT (Aquí es donde la CPU trabaja)
+        spectr = np.abs(np.fft.fft(signal))
         
-        # Simular procesamiento básico (reducción de volumen al 50%)
-        processed = digital_signal * 0.5
+        # 3. Buscamos la frecuencia más fuerte
+        freqs = np.fft.fftfreq(CHUNK_SIZE, 1/FS)
+        indice_max = np.argmax(spectr[:CHUNK_SIZE//2])
+        detected_freq = abs(freqs[indice_max])
         
-        # Simular envío a buffer (convertir a bytes)
-        _ = processed.tobytes()
-
-        # Incrementar contador de muestras
-        n += CHUNK_SIZE
-        
-        # Dormir el tiempo exacto que dura el bloque para simular tiempo real
+        # Simulamos un pequeño log para ver que funciona
+        if np.random.rand() > 0.95: # Solo imprimimos a veces para no saturar
+            print(f"[FFT] Frecuencia detectada: {detected_freq:.2f} Hz")
+            
         time.sleep(CHUNK_SIZE / FS)
 
 def setup():
