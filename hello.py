@@ -16,10 +16,12 @@ def test_simulation():
 
     print(f"---init test in {Device.pin_factory}---")
     print("simulating button press...")
+    button.pin.drive_low()
 
     if button.is_pressed:
-        print("button is pressed, turning on LED")
         led.on()
+        print(f"button is pressed, turning on LED {led.is_lit}")
+        
 
     time.sleep(1)
     led.off()
