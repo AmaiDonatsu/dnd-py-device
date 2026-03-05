@@ -2,26 +2,54 @@ import paho.mqtt.client as mqtt
 import json
 import time
 
+# Configuración del Broker Público
 BROKER = "test.mosquitto.org"
 PORT = 1883
 TOPIC = "instrumento/telemetria/nota"
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties=None):
+    """Callback que se ejecuta cuando el cliente se conecta al broker."""
     if rc == 0:
-        print("Conectado ao broker MQTT!")
+        print("✅ [MQTT] Conectado al broker correctamente!")
     else:
-        print("Falha na conexão, código de erro:", rc)
+        print(f"❌ [MQTT] Error de conexión, código: {rc}")
 
-client = mqtt.Client()
+def on_disconnect(client, userdata, rc):
+    """Callback que se ejecuta cuando el cliente se desconecta."""
+    print("⚠️ [MQTT] Desconectado del broker.")
+
+# Inicializar el cliente (usando la API v2 de Paho)
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
+client.on_disconnect = on_disconnect
 
-client.connect(BROKER, PORT, 60)
-client.loop_start()
+def connect_mqtt():
+    """Establece la conexión y arranca el bucle en segundo plano."""
+    try:
+        print(f"🔗 [MQTT] Conectando a {BROKER}...")
+        client.connect(BROKER, PORT, 60)
+        # loop_start() corre en un hilo separado para no bloquear la app
+        client.loop_start()
+    except Exception as e:
+        print(f"❌ [MQTT] No se pudo conectar: {e}")
 
 def send_note(frec, note_name):
+    """Envía un mensaje JSON con la frecuencia y el nombre de la nota."""
     payload = {
         "timestamp": int(time.time()),
-        "frequency": frec,
+        "frequency": round(frec, 2),
         "note": note_name
     }
-    client.publish(TOPIC, json.dumps(payload), qos=0)
+    
+    # Publicar el mensaje (qos=0 es 'enviar y olvidar', ideal para telemetría rápida)
+    result = client.publish(TOPIC, json.dumps(payload), qos=0)
+    
+    # Verificar si el mensaje se envió a la cola de salida
+    if result.rc != mqtt.MQTT_ERR_SUCCESS:
+        print("❌ [MQTT] Error al intentar publicar el mensaje.")
+
+def stop_mqtt():
+    """Limpia la conexión antes de salir."""
+    client.loop_stop()
+    client.disconnect()
+    print("🛑 [MQTT] Conexión cerrada.")
