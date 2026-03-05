@@ -7,4 +7,5 @@ requires-python = ">=3.12"
 dependencies = [
     "gpiozero>=2.0.1",
     "numpy>=2.4.2",
+    "paho-mqtt>=2.1.0",
 ]
