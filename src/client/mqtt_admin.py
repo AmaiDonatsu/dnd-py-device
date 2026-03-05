@@ -14,9 +14,9 @@ def on_connect(client, userdata, flags, rc, properties=None):
     else:
         print(f"❌ [MQTT] Error de conexión, código: {rc}")
 
-def on_disconnect(client, userdata, rc):
+def on_disconnect(client, userdata, flags, rc, properties=None):
     """Callback que se ejecuta cuando el cliente se desconecta."""
-    print("⚠️ [MQTT] Desconectado del broker.")
+    print(f"⚠️ [MQTT] Desconectado del broker (Código: {rc}).")
 
 # Inicializar el cliente (usando la API v2 de Paho)
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
