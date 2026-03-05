@@ -8,8 +8,8 @@ os.environ['GPIOZERO_PIN_FACTORY'] = 'mock'
 from gpiozero import LED, Button, Device
 
 def audio_processing():
-    FS = 44100  # Frecuencia de muestreo
-    CHUNK_SIZE = 1024  # Tamaño del bloque de audio
+    FS = 44100  
+    CHUNK_SIZE = 1024 
     F_NOTE = 440.0  # Frecuencia de la nota (A4)
 
     print(f"[Audio] Simulando procesamiento de audio a {FS} Hz, bloque de {CHUNK_SIZE} muestras, nota {F_NOTE} Hz")
@@ -17,20 +17,17 @@ def audio_processing():
 
     n = 0
     while True:
-        # 1. Simulamos ruido + una nota de guitarra (440Hz)
+
         t = np.linspace(0, CHUNK_SIZE/FS, CHUNK_SIZE)
         signal = np.sin(2 * np.pi * 440 * t) + np.random.normal(0, 0.1, CHUNK_SIZE)
         
-        # 2. EJECUTAMOS LA FFT (Aquí es donde la CPU trabaja)
         spectr = np.abs(np.fft.fft(signal))
         
-        # 3. Buscamos la frecuencia más fuerte
         freqs = np.fft.fftfreq(CHUNK_SIZE, 1/FS)
         indice_max = np.argmax(spectr[:CHUNK_SIZE//2])
         detected_freq = abs(freqs[indice_max])
-        
-        # Simulamos un pequeño log para ver que funciona
-        if np.random.rand() > 0.95: # Solo imprimimos a veces para no saturar
+
+        if np.random.rand() > 0.95:
             print(f"[FFT] Frecuencia detectada: {detected_freq:.2f} Hz")
             
         time.sleep(CHUNK_SIZE / FS)
